@@ -7,20 +7,37 @@ import { Section, Title } from "./App.styled";
 
 
 
-export class App extends Component {
+export  class App extends Component {
 
   state = {
     contacts: initialContacts,
     filter: '',
   };
 
+  componentDidMount(){
+    const localStorageContacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(localStorageContacts);
+    if (!parsedContacts) return;
+    this.setState({ contacts: parsedContacts });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
+
   addContact = newContact => {
-    this.state.contacts.filter(
+
+    const { contacts } = this.state;
+
+   contacts.some(
       contact =>
         contact.name.toLowerCase().trim() ===
           newContact.name.toLowerCase().trim() ||
         contact.number.trim() === newContact.number.trim()
-    ).length
+    )
       ? alert(`${newContact.name}: is already in contacts`)
       : this.setState(prevState => {
           return {
